@@ -1,88 +1,80 @@
 import './LoginPage.css';
 import React, { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { initializeApp } from 'firebase/app';
+import { auth } from "../../firebase/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
-};
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const centerClasses = "w-full flex items-center justify-center";
 
 function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isSignUp, setIsSignUp] = useState(false);
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
 
-    const handleAuth = async (e) => {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
-        setLoading(true);
 
-        try {
-            if (isSignUp) {
-                await createUserWithEmailAndPassword(auth, email, password);
-                alert('Account created successfully!');
-            } else {
-                await signInWithEmailAndPassword(auth, email, password);
-                alert('Signed in successfully!');
-            }
-            setEmail('');
-            setPassword('');
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
+        try{
+            const userCredential = await signInWithEmailAndPassword(
+                auth,
+                username, // email
+                password
+            );
+
+            const user = userCredential.user;
+            alert("LOGIN SUCCESS! WELCOME " + user.email);
+             
+        } catch(error){
+            alert("LOGIN FAILED. " + error.message); 
+            console.log(import.meta.env.VITE_FIREBASE_API_KEY);
         }
+
     };
 
-    return(
-        <div className="login-container">
-            <div className="login-box">
-                <h1>{isSignUp ? 'Sign Up' : 'Login'}</h1>
-                <form onSubmit={handleAuth}>
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                    <button type="submit" disabled={loading}>
-                        {loading ? 'Loading...' : (isSignUp ? 'Sign Up' : 'Login')}
-                    </button>
-                </form>
-                {error && <p className="error">{error}</p>}
-                <p>
-                    {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-                    <button 
-                        type="button"
-                        className="toggle-button"
-                        onClick={() => setIsSignUp(!isSignUp)}
-                    >
-                        {isSignUp ? 'Login' : 'Sign Up'}
-                    </button>
-                </p>
+    return(<div id="login-container" className={`min-h-screen ${centerClasses}`}>
+        <form
+            onSubmit={handleSubmit}
+            className="bg-blue-100 p-7 rounded-xl shadow-md w-80"
+        >
+            <h2 className="text-2xl font-bold text-center">
+                LOGIN
+            </h2>
+
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Username
+                </label>
+                <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
+                />
             </div>
-        </div>
-    );
+
+            <div className="mb-6">
+                <label className="block mb-1 text-sm font-medium">
+                    Password
+                </label>
+                <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
+                />
+            </div>
+
+            <button
+                type="submit"
+                className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
+            >
+                Login
+            </button>
+        </form>
+        
+    </div>)
 }
 
 export default LoginPage;
