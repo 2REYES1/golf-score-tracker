@@ -2,6 +2,7 @@ import './LoginPage.css';
 import React, { useState } from 'react';
 import { auth } from "../../firebase/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom"; 
 
 
 const centerClasses = "w-full flex items-center justify-center";
@@ -10,6 +11,7 @@ function LoginPage() {
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,6 +25,7 @@ function LoginPage() {
 
             const user = userCredential.user;
             alert("LOGIN SUCCESS! WELCOME " + user.email);
+            navigate("/dashboard");
              
         } catch(error){
             alert("LOGIN FAILED. " + error.message); 
