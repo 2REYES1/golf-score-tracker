@@ -3,10 +3,57 @@ import { AuthContext } from "../../context/AuthContext";
 import LogoutButton from "../LogoutButton/LogoutButton.jsx";
 import PastRoundCard from "../PastRoundCard/PastRoundCard.jsx";
 import AddRoundButton from "../AddRoundButton/AddRoundButton.jsx";
+import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase/firebase";
+import { useEffect, useState } from "react";
 
 function Dashboard() {
   const { user } = useContext(AuthContext);
-  const centerClasses = "w-full flex items-center justify-center";
+  const [rounds, setRounds] = useState([]);
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const roundsRef = collection(db, "users", user.uid, "rounds");
+
+    const unsubscribe = onSnapshot(roundsRef, (snapshot) => {
+      const roundsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      setRounds(roundsData);
+    }, (error) => {
+      console.error("Error fetching rounds:", error);
+    });
+
+    // Clean up listener when component unmounts
+    return () => unsubscribe();
+
+  }, [user]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) return;
+
+      try {
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+          setUserData(userSnap.data());
+        } else {
+          console.log("No such user document!");
+        }
+
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [user]);
 
   return (
     <>
@@ -14,7 +61,9 @@ function Dashboard() {
       <div id="dash-header" className="fixed top-0 left-0 w-full bg-white shadow-md z-50">
         <div className="max-w-6xl mx-auto flex justify-between items-center px-6 py-4">
           <div className="font-semibold text-lg">
-            {user?.email}
+            {userData 
+            ? `${userData.firstName} ${userData.lastName}` 
+            : "Loading..."}
           </div>
           <LogoutButton/>
         </div>
@@ -57,43 +106,18 @@ function Dashboard() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="pt-[calc(64px+33vh)] px-6 max-w-6xl mx-auto space-y-4">
-        <PastRoundCard 
-          courseName="Pebble Beach"
-          date="Feb 12, 2026"
-          performanceColor="#22c55e"
-        />
-        <PastRoundCard 
-          courseName="Pebble Beach"
-          date="Feb 12, 2026"
-          performanceColor="#22c55e"
-        />
-        <PastRoundCard 
-          courseName="Pebble Beach"
-          date="Feb 12, 2026"
-          performanceColor="#22c55e"
-        />
-        <PastRoundCard 
-          courseName="Pebble Beach"
-          date="Feb 12, 2026"
-          performanceColor="#22c55e"
-        />
-        <PastRoundCard 
-          courseName="Pebble Beach"
-          date="Feb 12, 2026"
-          performanceColor="#22c55e"
-        />
-        <PastRoundCard 
-          courseName="Pebble Beach"
-          date="Feb 12, 2026"
-          performanceColor="#22c55e"
-        />
-        <PastRoundCard 
-          courseName="Pebble Beach"
-          date="Feb 12, 2026"
-          performanceColor="#22c55e"
-        />
+      <main className="pt-[calc(4rem+33vh)] pb-28">
+        <div className="max-w-6xl mx-auto px-6 space-y-4">
+        {rounds.map(round => (
+          <PastRoundCard
+            key={round.id}
+            courseName={round.courseName}
+            date={round.date}
+            performanceColor={round.tempoColorVal}
+          />
+        ))}
       </div>
+      </main>
 
       <AddRoundButton/>
     </>
