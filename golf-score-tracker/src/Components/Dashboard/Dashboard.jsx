@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import LogoutButton from "../LogoutButton/LogoutButton.jsx";
+import PastRoundCard from "../PastRoundCard/PastRoundCard.jsx";
 
 function Dashboard() {
   const { user } = useContext(AuthContext);
@@ -54,7 +55,14 @@ function Dashboard() {
         </div>
       </div>
 
-      
+      {/* MAIN CONTENT */}
+      <div className="pt-[calc(64px+33vh)] px-6 max-w-6xl mx-auto space-y-4">
+        <PastRoundCard 
+          courseName="Pebble Beach"
+          date="Feb 12, 2026"
+          performanceColor="#22c55e"
+        />
+      </div>
     </>
     
 
