@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import LogoutButton from "../LogoutButton/LogoutButton.jsx";
 import PastRoundCard from "../PastRoundCard/PastRoundCard.jsx";
+import AddRoundButton from "../AddRoundButton/AddRoundButton.jsx";
 
 function Dashboard() {
   const { user } = useContext(AuthContext);
@@ -62,7 +63,39 @@ function Dashboard() {
           date="Feb 12, 2026"
           performanceColor="#22c55e"
         />
+        <PastRoundCard 
+          courseName="Pebble Beach"
+          date="Feb 12, 2026"
+          performanceColor="#22c55e"
+        />
+        <PastRoundCard 
+          courseName="Pebble Beach"
+          date="Feb 12, 2026"
+          performanceColor="#22c55e"
+        />
+        <PastRoundCard 
+          courseName="Pebble Beach"
+          date="Feb 12, 2026"
+          performanceColor="#22c55e"
+        />
+        <PastRoundCard 
+          courseName="Pebble Beach"
+          date="Feb 12, 2026"
+          performanceColor="#22c55e"
+        />
+        <PastRoundCard 
+          courseName="Pebble Beach"
+          date="Feb 12, 2026"
+          performanceColor="#22c55e"
+        />
+        <PastRoundCard 
+          courseName="Pebble Beach"
+          date="Feb 12, 2026"
+          performanceColor="#22c55e"
+        />
       </div>
+
+      <AddRoundButton/>
     </>
     
 
